@@ -9,8 +9,6 @@ main = do
   example <- readFile "example.txt"
   input <- readFile "input.txt"
 
-  print $ parseInput example
-
   putStrLn "Part 1"
   print $ part1 $ parseInput example
   print $ part1 $ parseInput input
