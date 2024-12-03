@@ -5,7 +5,7 @@ solveDay02 = do
   example <- readFile "input/day02_example.txt"
   input <- readFile "input/day02_input.txt"
 
-  putStrLn "Part 1"
+  putStrLn "\n\nDay 02\n---\nPart 1"
   print $ part1 $ parseInput example
   print $ part1 $ parseInput input
   putStrLn "\nPart 2"
