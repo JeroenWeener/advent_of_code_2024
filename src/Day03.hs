@@ -1,11 +1,12 @@
+module Day03 where
+
 import Text.Regex.TDFA
 
--- Run `cabal run` to execute this solution.
-main :: IO ()
-main = do
-  example <- readFile "example.txt"
-  example2 <- readFile "example2.txt"
-  input <- readFile "input.txt"
+solveDay03 :: IO ()
+solveDay03 = do
+  example <- readFile "input/day03_example.txt"
+  example2 <- readFile "input/day03_example2.txt"
+  input <- readFile "input/day03_input.txt"
 
   putStrLn "Part 1"
   print $ part1 example
@@ -36,5 +37,5 @@ parseInstructions :: Bool -> [String] -> Int
 parseInstructions _ [] = 0
 parseInstructions _ ("do()" : ts) = parseInstructions True ts
 parseInstructions _ ("don't()" : ts) = parseInstructions False ts
+parseInstructions False (_ : ts) = parseInstructions False ts
 parseInstructions True (mul : ts) = parseMul mul + parseInstructions True ts
-parseInstructions False (mul : ts) = parseInstructions False ts
