@@ -49,5 +49,5 @@ isX ts (x, y) = (d == "MS" || d == "SM") && (a == "MS" || a == "SM")
     ur = ts !! (x + 1) !! (y - 1)
     ll = ts !! (x - 1) !! (y + 1)
     lr = ts !! (x + 1) !! (y + 1)
-    d = [ul, lr]
-    a = [ll, ur]
+    d = [ll, ur]
+    a = [ul, lr]

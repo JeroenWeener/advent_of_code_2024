@@ -13,13 +13,13 @@ solveDay02 = do
   print $ part2 $ parseInput input
 
 parseInput :: String -> [[Int]]
-parseInput input = map (map read . words) (lines input)
+parseInput = map (map read . words) . lines
 
 part1 :: [[Int]] -> Int
 part1 = length . filter safe
 
 part2 :: [[Int]] -> Int
-part2 rs = length . filter (any safe) $ map dampen rs
+part2 = length . filter (any safe) . map dampen
 
 safe :: [Int] -> Bool
 safe rs = safeIncrease rs || safeDecrease rs

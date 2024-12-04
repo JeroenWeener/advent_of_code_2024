@@ -15,10 +15,10 @@ solveDay01 = do
   print $ part2 $ parseInput input
 
 parseInput :: String -> [[Int]]
-parseInput input = transpose $ map (map read . words) (lines input)
+parseInput = transpose . map (map read . words) . lines
 
 part1 :: [[Int]] -> Int
-part1 input = sum $ map d $ transpose $ map sort input
+part1 = sum . map d . transpose . map sort
 
 part2 :: [[Int]] -> Int
 part2 [as, bs] = sum $ map (\a -> a * count a bs) as
