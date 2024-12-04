@@ -3,6 +3,7 @@ module Main where
 import Day01 (solveDay01)
 import Day02 (solveDay02)
 import Day03 (solveDay03)
+import Day04 (solveDay04)
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
 
@@ -10,7 +11,8 @@ solutions :: [IO ()]
 solutions =
   [ solveDay01,
     solveDay02,
-    solveDay03
+    solveDay03,
+    solveDay04
   ]
 
 main :: IO ()
