@@ -13,7 +13,8 @@ executable advent-of-code2024
     other-modules:    Day01,
                       Day02,
                       Day03,
-                      Day04
+                      Day04,
+                      Day05
     build-depends:    base ^>= 4.17.2.1,
                       regex-tdfa ^>= 1.3.2.2,
                       hint ^>= 0.9.0.8
