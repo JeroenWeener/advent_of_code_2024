@@ -17,7 +17,8 @@ executable advent-of-code2024
                       Day05,
                       Day06,
                       Day07,
-                      Day08
+                      Day08,
+                      Day09
     build-depends:    base,
                       containers,
                       regex-tdfa,
