@@ -24,6 +24,7 @@ executable advent-of-code2024
     build-depends:    base,
                       containers,
                       regex-tdfa,
-                      hint
+                      hint,
+                      MemoTrie
     hs-source-dirs:   app, src
     default-language: Haskell2010
