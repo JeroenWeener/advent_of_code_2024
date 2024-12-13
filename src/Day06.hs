@@ -1,8 +1,7 @@
 module Day06 where
 
-import Data.List (find)
-import Data.Maybe (fromJust)
-import qualified Data.Set as Set
+import Data.List (find, nub, sortOn, unfoldr)
+import Data.Maybe (fromJust, isNothing)
 
 type C = (Int, Int)
 
@@ -22,85 +21,88 @@ solveDay06 = do
   print $ part2 $ parseInput example
   print $ part2 $ parseInput input
 
-parseInput :: String -> (Set.Set C, G, (Int, Int))
-parseInput input = (parseObstacles ls, parseGuard ls, parseDims ls)
+parseInput :: String -> ([C], G, Int)
+parseInput input = (parseObstacles ls, parseGuard ls, length ls)
   where
     ls = lines input
 
-parseDims :: [String] -> (Int, Int)
-parseDims ls = (length (head ls), length ls)
-
-parseObstacles :: [String] -> Set.Set C
+parseObstacles :: [String] -> [C]
 parseObstacles ls =
-  Set.fromList
-    [ (x, y)
-      | x <- [0 .. length (head ls) - 1],
-        y <- [0 .. length ls - 1],
-        ls !! y !! x == '#'
-    ]
+  [ (y, x)
+    | y <- [0 .. length ls - 1],
+      x <- [0 .. length ls - 1],
+      ls !! y !! x == '#'
+  ]
 
 parseGuard :: [String] -> G
-parseGuard ls = ((x, y), 0)
+parseGuard ls = ((y, x), 0)
   where
-    width = length (head ls)
-    i = fst . fromJust . find (\(_, c) -> c == '^') $ zip [0 ..] (concat ls)
-    x = i `mod` width
-    y = i `div` width
+    i =
+      ( fst
+          . fromJust
+          . find (\(_, c) -> c == '^')
+          . zip [0 ..]
+      )
+        (concat ls)
+    x = i `mod` length ls
+    y = i `div` length ls
 
-part1 :: (Set.Set C, G, (Int, Int)) -> Int
-part1 (os, g, dims) = steps os vs g dims
+part1 :: ([C], G, Int) -> Int
+part1 (obstacle, guard, size) = (length . steps obstacle size) guard
+
+part2 :: ([C], G, Int) -> Int
+part2 (obstacle, guard, size) = (length . filter (isLooping guard [])) obstacles
   where
-    vs = Set.singleton g
+    obstacles = [o : obstacle | o <- steps obstacle size guard]
 
-part2 :: (Set.Set C, G, (Int, Int)) -> Int
-part2 (os, g, dims) = loops os vs g dims False
+steps :: [C] -> Int -> G -> [C]
+steps obstacle size = nub . map fst . unfoldr (step obstacle size)
+
+step :: [C] -> Int -> G -> Maybe (G, G)
+step obstacle size guard@(p, d)
+  | isOut p size = Nothing
+  | next `elem` obstacle = Just (guard, (p, turn d))
+  | otherwise = Just (guard, (next, d))
   where
-    vs = Set.singleton g
+    next = p +: direction d
 
-direction :: D -> C
-direction 0 = (0, -1)
-direction 1 = (1, 0)
-direction 2 = (0, 1)
-direction _ = (-1, 0)
-
-turnRight :: D -> D
-turnRight n = (n + 1) `mod` 4
-
-add :: C -> C -> C
-add (l1, r1) (l2, r2) = (l1 + l2, r1 + r2)
-
-steps :: Set.Set C -> Set.Set (C, D) -> G -> (Int, Int) -> Int
-steps os vs (p, d) dims
-  | isOut = length (Set.map fst vs)
-  | isObstructed = turn
-  | otherwise = move
+isLooping :: G -> [G] -> [C] -> Bool
+isLooping guard@(_, d) visited obstacle
+  | guard `elem` visited = True
+  | isNothing nextObstacle = False
+  | otherwise = isLooping (nextPosition, turn d) (guard : visited) obstacle
   where
-    p'@(x, y) = p `add` direction d
-    isOut = x < 0 || x >= fst dims || y < 0 || y >= snd dims
-    isObstructed = p' `elem` os
-    vs' = Set.insert (p', d) vs
-    turn = steps os vs (p, turnRight d) dims
-    move = steps os vs' (p', d) dims
+    nextObstacle = findObstacle guard obstacle
+    nextPosition = fromJust nextObstacle -: direction d
 
-loops :: Set.Set C -> Set.Set (C, D) -> G -> (Int, Int) -> Bool -> Int
-loops os vs (p, d) dims e
-  | isOut = 0
-  | isVisited = 1
-  | isObstructed = turn
-  | otherwise = move + placeObstacle
-  where
-    p'@(x, y) = p `add` direction d
-    isOut = x < 0 || x >= fst dims || y < 0 || y >= snd dims
-    isVisited = (p', d) `elem` vs
-    isObstructed = p' `elem` os
-    turn = loops os vs (p, turnRight d) dims e
-    move = loops os vs' g' dims e
-      where
-        g' = (p', d)
-        vs' = Set.insert g' vs
-    placeObstacle
-      | e = 0
-      | p' `elem` Set.map fst vs = 0
-      | otherwise = loops os' vs (p, turnRight d) dims True
-      where
-        os' = Set.insert p' os
+findObstacle :: G -> [C] -> Maybe C
+findObstacle ((y1, x1), 0) = maybeLast . sortOn fst . filter (\(y2, x2) -> x1 == x2 && y2 < y1)
+findObstacle ((y1, x1), 1) = maybeHead . sortOn snd . filter (\(y2, x2) -> y1 == y2 && x2 > x1)
+findObstacle ((y1, x1), 2) = maybeHead . sortOn fst . filter (\(y2, x2) -> x1 == x2 && y2 > y1)
+findObstacle ((y1, x1), _) = maybeLast . sortOn snd . filter (\(y2, x2) -> y1 == y2 && x2 < x1)
+
+maybeHead :: [a] -> Maybe a
+maybeHead [] = Nothing
+maybeHead n = Just (head n)
+
+maybeLast :: [a] -> Maybe a
+maybeLast [] = Nothing
+maybeLast n = Just (last n)
+
+isOut :: C -> Int -> Bool
+isOut (y, x) size = y < 0 || y >= size || x < 0 || x >= size
+
+(+:) :: C -> C -> C
+(+:) (a, b) (c, d) = (a + c, b + d)
+
+(-:) :: C -> C -> C
+(-:) (a, b) (c, d) = (a - c, b - d)
+
+turn :: Int -> Int
+turn n = (n + 1) `mod` 4
+
+direction :: Int -> C
+direction 0 = (-1, 0)
+direction 1 = (0, 1)
+direction 2 = (1, 0)
+direction _ = (0, -1)
