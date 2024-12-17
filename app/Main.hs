@@ -14,6 +14,7 @@ import Day11 (solveDay11)
 import Day12 (solveDay12)
 import Day13 (solveDay13)
 import Day14 (solveDay14)
+import Day15 (solveDay15)
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
 
@@ -32,7 +33,8 @@ solutions =
     solveDay11,
     solveDay12,
     solveDay13,
-    solveDay14
+    solveDay14,
+    solveDay15
   ]
 
 main :: IO ()
