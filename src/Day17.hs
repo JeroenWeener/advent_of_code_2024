@@ -1,6 +1,6 @@
 module Day17 where
 
-import Data.Bits (Bits (shiftR, xor, (.&.)), shiftL)
+import Data.Bits (shiftR, xor, (.&.), shiftL)
 import Data.Char (digitToInt)
 import Data.List (elemIndices)
 import Data.Maybe (fromJust)
