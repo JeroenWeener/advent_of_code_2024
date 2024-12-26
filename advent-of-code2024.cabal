@@ -32,7 +32,8 @@ executable advent-of-code2024
                       Day20,
                       Day21,
                       Day22,
-                      Day23
+                      Day23,
+                      Day24
     build-depends:    base,
                       containers,
                       split,
